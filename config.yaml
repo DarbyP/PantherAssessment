@@ -1,0 +1,51 @@
+# Canvas Multi-Section Reporter - Configuration
+# Default configuration file
+
+canvas:
+  base_url: "https://fit.instructure.com"  # Florida Tech Canvas
+  api_version: "v1"
+  request_timeout: 30
+
+# University color scheme
+ui:
+  colors:
+    primary: "#770000"      # University maroon
+    secondary: "#CBCCCE"    # University gray
+    background: "#FFFFFF"
+    text: "#000000"
+    success: "#2E7D32"      # Green for met threshold
+    warning: "#F57C00"      # Orange for borderline
+    error: "#C62828"        # Red for not met
+
+report_settings:
+  default_threshold: 70
+  borderline_range: 5     # Within 5% of threshold
+  
+  # Color coding for Excel reports
+  excel_colors:
+    met: "90EE90"         # Light green
+    not_met: "FFB6C1"     # Light red  
+    borderline: "FFFFE0"  # Light yellow
+
+aggregation:
+  include_withdrawn: false
+  minimum_submission_rate: 0.5  # Warn if <50% submitted
+
+output:
+  default_directory: "./reports"
+  timestamp_files: true
+  include_raw_data_sheet: true
+  csv_export: true
+
+# Configuration template settings
+templates:
+  storage_directory: "./templates"
+  auto_suggest: true
+  allow_export: true
+  allow_import: true
+
+# User preferences
+user_settings:
+  save_preferences: true
+  share_configurations: false
+  remember_last_course: true
