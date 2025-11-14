@@ -28,7 +28,7 @@ For detailed instructions, see [INSTALL_WINDOWS.md](INSTALL_WINDOWS.md) or [INST
 
 ## Initial Setup and Authentication
 When you first launch Panther Assessment, you will be prompted to authenticate with Canvas. Follow these steps:
-1.	Enter your university’s Canvas url. Be sure you enter the direct URL (e.g., https://university.instructure.com) rather than a redirect URL (https://canvas.university.edu).
+1.	When you open the program, it will prompt you to enter your university’s Canvas url. Be sure you enter the direct URL (e.g., https://university.instructure.com) rather than a redirect URL (https://canvas.university.edu).
 2.	After entering the Canvas URL, the Canvas authentication window will open 
 3.	Click the "Open Canvas" button to visit Canvas in your browser
 4.	In Canvas, go to Account → Settings → Approved Integrations
@@ -50,12 +50,6 @@ A User Guide is included within the program for details on using the software.
 
 For issues or questions, please [open an issue](../../issues).
 
-## For Developers
-
-Source code is available in platform-specific branches:
-- [Windows source](../../tree/windows)
-- [Mac source](../../tree/mac)
-
 ## License
 
-MIT
+[Your chosen license - MIT is common for academic tools]
