@@ -50,6 +50,12 @@ A User Guide is included within the program for details on using the software.
 
 For issues or questions, please [open an issue](../../issues).
 
+## For Developers
+
+Source code is available in platform-specific branches:
+- [Windows source](../../tree/windows)
+- [Mac source](../../tree/mac)
+
 ## License
 
 [Your chosen license - MIT is common for academic tools]
