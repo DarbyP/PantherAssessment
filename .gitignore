@@ -1,0 +1,26 @@
+**Create `.gitignore` file**:
+```
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+*.spec
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs (don't commit executables to repo)
+*.exe
+*.app
+*.zip
+*.msi
+*.msix
