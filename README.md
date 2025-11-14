@@ -35,8 +35,8 @@ When you first launch Panther Assessment, you will be prompted to authenticate w
 5.	Click "+ New Access Token"
 6.	Enter a purpose (e.g., "Panther Assessment") and leave expiration date blank 
 7.	Click "Generate Token"
-8.	Copy the generated token (it will only be shown once)
-9.	Paste the token into the Panther Assessment authentication window
+8.	Copy the generated token (it will only be shown once). 
+9.	Paste the token into the Panther Assessment authentication window. Important: Your Canvas API token is stored securely on your computer and is only used to communicate with Canvas. Never share your token with others.
 10.	Click "Connect"
 
 A User Guide is included within the program for details on using the software.
