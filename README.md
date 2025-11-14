@@ -13,8 +13,8 @@ Panther Assessment is a powerful assessment reporting tool that helps faculty ge
 ## Installation
 
 Download the latest release for your platform:
-- [Windows Installer](../../releases/latest)
-- [Mac Application](../../releases/latest)
+- [Windows](../../releases/latest)
+- [Mac](../../releases/latest)
 
 **Note**: These applications are not code-signed. You will see security warnings when first opening them.
 
