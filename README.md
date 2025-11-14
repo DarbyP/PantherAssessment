@@ -26,13 +26,20 @@ After downloading, right-click the application and select "Open" (don't double-c
 
 For detailed instructions, see [INSTALL_WINDOWS.md](INSTALL_WINDOWS.md) or [INSTALL_MAC.md](INSTALL_MAC.md).
 
-## Usage
+## Initial Setup and Authentication
+When you first launch Panther Assessment, you will be prompted to authenticate with Canvas. Follow these steps:
+1.	When you open the program, it will prompt you to enter your university’s Canvas url. Be sure you enter the direct URL (e.g., https://university.instructure.com) rather than a redirect URL (https://canvas.university.edu).
+2.	After entering the Canvas URL, the Canvas authentication window will open 
+3.	Click the "Open Canvas" button to visit Canvas in your browser
+4.	In Canvas, go to Account → Settings → Approved Integrations
+5.	Click "+ New Access Token"
+6.	Enter a purpose (e.g., "Panther Assessment") and leave expiration date blank 
+7.	Click "Generate Token"
+8.	Copy the generated token (it will only be shown once)
+9.	Paste the token into the Panther Assessment authentication window
+10.	Click "Connect"
 
-1. Launch the application
-2. Enter your Canvas API token (generated from Canvas Account Settings)
-3. Select your course sections
-4. Create or load an assessment template
-5. Generate your report
+A User Guide is included within the program for details on using the software.
 
 ## Requirements
 
