@@ -58,4 +58,4 @@ Source code is available in platform-specific branches:
 
 ## License
 
-[Your chosen license - MIT is common for academic tools]
+MIT
