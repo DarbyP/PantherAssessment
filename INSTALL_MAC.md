@@ -10,7 +10,6 @@
 ## First Launch
 
 macOS Gatekeeper will ask if you are sure you want to open the program. Click **"Open"**
-<img width="266" height="414" alt="mac_gatekeeper" src="https://github.com/user-attachments/assets/6a0a41f5-9cc5-4047-9ccd-c5ee8ef74c46" />
 
 This process only needs to be done once. After this, you can launch normally.
 
