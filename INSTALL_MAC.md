@@ -3,26 +3,16 @@
 ## Download
 
 1. Go to the [latest release](../../releases/latest)
-2. Download `PantherAssessment-Mac.zip`
-3. Double-click to extract the application
+2. Download `PantherAssessment.dmg`
+3. Double-click to open the package
+4. Drag PantherAssessment.app to your applications folder (or whereever you would like to keep the program)
 
 ## First Launch
 
-macOS Gatekeeper will prevent the application from running initially because it's not code-signed.
-
-1. **Do not double-click the application**
-2. Right-click (or Control+click) on `PantherAssessment.app`
-3. Select **"Open"** from the menu
-4. Click **"Open"** in the security dialog
+macOS Gatekeeper will ask if you are sure you want to open the program. Click **"Open"**
+<img width="266" height="414" alt="mac_gatekeeper" src="https://github.com/user-attachments/assets/6a0a41f5-9cc5-4047-9ccd-c5ee8ef74c46" />
 
 This process only needs to be done once. After this, you can launch normally.
-
-### Alternative Method
-
-If right-clicking doesn't work:
-1. Open System Preferences → Security & Privacy
-2. Try to open the application normally
-3. In Security & Privacy, click "Open Anyway"
 
 ## Canvas API Token
 
@@ -44,10 +34,5 @@ When you first launch Panther Assessment, you will be prompted to authenticate w
 A User Guide is included within the program for details on using the software.
 
 ## Troubleshooting
-
-**"App is damaged" error**: macOS quarantines downloaded files. Run this in Terminal:
-```bash
-xattr -cr /path/to/PantherAssessment.app
-```
 
 **Canvas connection fails**: Verify your API token is correct and hasn't expired.
