@@ -5,7 +5,7 @@
 1. Go to the [latest release](../../releases/latest)
 2. Download `PantherAssessment.dmg`
 3. Double-click to open the package
-4. Drag PantherAssessment.app to your applications folder (or whereever you would like to keep the program)
+4. Open your applications folder (or wherever you would like to keep the program) and drag Panther Assessment.app to that location. 
 
 ## First Launch
 
