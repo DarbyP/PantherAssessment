@@ -1891,7 +1891,7 @@ class MainWindow(QMainWindow):
                     has_quiz = True
             
             # Prioritize: show rubric if it exists and it's not a quiz, otherwise show quiz interface
-            if rubric and not has_quiz:
+            if rubric:
                 # Paper assignment with rubric
                 tab_layout.addWidget(QLabel("Select rubric criteria to include:"))
                 
@@ -1965,7 +1965,7 @@ class MainWindow(QMainWindow):
                 
                 tab_layout.addWidget(rubric_list)
                 
-            elif has_quiz:
+            if has_quiz:
                 # Quiz assignment - show question groups
                 tab_layout.addWidget(QLabel("Select question groups to include:"))
                 
