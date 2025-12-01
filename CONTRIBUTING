@@ -1,0 +1,64 @@
+# Contributing to Panther Assessment
+
+Thank you for your interest in contributing to Panther Assessment! This tool helps faculty generate comprehensive assessment reports from Canvas LMS data.
+
+## Scope
+
+While developed at Florida Tech, Panther Assessment can work at any university using Canvas LMS. Contributions that improve functionality, fix bugs, or enhance documentation are welcome.
+
+## How to Contribute
+
+### Reporting Bugs
+
+1. Check existing [GitHub Issues](https://github.com/DarbyP/panther-assessment/issues) to avoid duplicates
+2. Create a new issue with:
+   - Clear description of the problem
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Your operating system (Windows/Mac)
+   - Canvas LMS version if relevant
+
+### Suggesting Features
+
+Open a GitHub issue describing:
+- The feature and its use case
+- How it would benefit assessment reporting
+- Any Canvas API considerations
+
+### Contributing Code
+
+1. Fork the repository
+2. Create a feature branch from `main`: `git checkout -b feature-name`
+3. Make your changes following the existing code style
+4. Test thoroughly on your platform
+5. Submit a pull request to `main` with:
+   - Clear description of changes
+   - Why the change is needed
+   - Any testing performed
+
+**Note:** The `main` branch contains release distributions. Platform-specific code lives in `mac` and `windows` branches, which are maintained separately.
+
+### Building and Releases
+
+For Mac: Contributors should focus on code contributions only. All official Mac builds, code signing, and releases are handled by the project maintainer to ensure proper Apple code signing and notarization
+For PC: Build as desired as long as it works.
+
+### Improving Documentation
+
+Documentation improvements are always welcome! Submit PRs for:
+- README updates
+- Installation guide clarifications
+- User guide improvements
+- Code comments
+
+## Code Style
+
+Follow the existing code style in the project. Keep code readable and well-commented.
+
+## Questions?
+
+Open a GitHub issue for any questions about contributing.
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the same license as the project.
