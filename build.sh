@@ -20,8 +20,8 @@ fi
 
 echo
 echo "Build complete!"
-echo "Application location: dist/PantherAssess.app"
+echo "Application location: dist/Panther Assessment.app"
 echo
-echo "You can now distribute the PantherAssess.app file"
+echo "You can now distribute the Panther Assessment.app file"
 echo "To create a DMG for easier distribution, you can use:"
-echo "  hdiutil create -volname PantherAssess -srcfolder dist/PantherAssess.app -ov -format UDZO PantherAssess.dmg"
+echo "  hdiutil create -volname 'Panther Assessment' -srcfolder dist/'Panther Assessment.app' -ov -format UDZO 'Panther Assessment.dmg'"
