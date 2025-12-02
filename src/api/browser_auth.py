@@ -313,30 +313,77 @@ class TokenBasedCanvasClient:
             pass
         return {}
     
-    def get_courses(self, enrollment_type: str = 'teacher') -> list:
+ 
+    def get_accounts(self) -> list:
+        """Get accounts user has admin access to"""
+        if not self.session:
+            return []
+        
+        try:
+            response = self.session.get(
+                f"{self.base_url}/api/v1/accounts",
+                params={'per_page': 100},
+                timeout=30
+            )
+            if response.status_code == 200:
+                return response.json()
+        except:
+            pass
+        return []
+
+    def get_courses(self, enrollment_type: str = 'teacher', admin_mode: bool = False) -> list:
         """Get user's courses"""
         if not self.session:
             return []
         
         try:
-            params = {
-                'enrollment_type': enrollment_type,
-                'enrollment_state': 'active',
-                'include[]': ['term', 'total_students'],
-                'per_page': 200
-            }
-            
-            response = self.session.get(
-                f"{self.base_url}/api/v1/courses",
-                params=params,
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                return response.json()
+            if admin_mode:
+                # Get all courses from accounts user has admin access to
+                accounts = self.get_accounts()
+                all_courses = []
+                for account in accounts:
+                    account_id = account.get('id')
+                    if account_id:
+                        # Paginate through all courses
+                        url = f"{self.base_url}/api/v1/accounts/{account_id}/courses"
+                        params = {
+                            'include[]': ['term', 'total_students'],
+                            'per_page': 100,
+                            'with_enrollments': 'true',
+                            'state[]': ['available', 'completed']
+                        }
+                        while url:
+                            response = self.session.get(url, params=params, timeout=30)
+                            if response.status_code == 200:
+                                all_courses.extend(response.json())
+                                # Check for next page
+                                url = None
+                                params = None  # URL includes params after first request
+                                links = response.headers.get('Link', '')
+                                for link in links.split(','):
+                                    if 'rel="next"' in link:
+                                        url = link.split(';')[0].strip('<> ')
+                                        break
+                            else:
+                                break
+                return all_courses
+            else:
+                # Standard instructor mode
+                params = {
+                    'enrollment_type': enrollment_type,
+                    'enrollment_state': 'active',
+                    'include[]': ['term', 'total_students'],
+                    'per_page': 200
+                }
+                response = self.session.get(
+                    f"{self.base_url}/api/v1/courses",
+                    params=params,
+                    timeout=30
+                )
+                if response.status_code == 200:
+                    return response.json()
         except Exception:
             pass
-        
         return []
     
     def get_assignments(self, course_id: int) -> list:

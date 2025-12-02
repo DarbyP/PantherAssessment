@@ -3,6 +3,7 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
 *.so
 *.egg-info/
 dist/
@@ -24,3 +25,6 @@ Thumbs.db
 *.zip
 *.msi
 *.msix
+*.pyc
+*.pyc
+src/__pycache__/__init__.cpython-310.pyc

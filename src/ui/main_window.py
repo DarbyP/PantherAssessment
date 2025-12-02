@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.config = get_config()
         self.canvas_client = None
+        self.admin_mode = False
         
         self.setWindowTitle("Panther Assessment - Canvas Assessment Data Exporter")
         self.setMinimumSize(1000, 700)  # Minimum size that fits on smaller screens
@@ -394,15 +395,11 @@ class MainWindow(QMainWindow):
         current_year = datetime.now().year
         for year in range(current_year - 3, current_year + 2):
             self.year_filter.addItem(str(year))
-        # Dynamic filtering - instant for dropdowns
-        self.year_filter.currentTextChanged.connect(self.search_courses)
         filter_layout.addWidget(self.year_filter)
         
         filter_layout.addWidget(QLabel("Semester:"))
         self.semester_filter = QComboBox()
         self.semester_filter.addItems(["", "Fall", "Spring", "Summer"])
-        # Dynamic filtering - instant for dropdowns
-        self.semester_filter.currentTextChanged.connect(self.search_courses)
         filter_layout.addWidget(self.semester_filter)
         
         search_btn = QPushButton("🔍 Search")
@@ -412,13 +409,20 @@ class MainWindow(QMainWindow):
         filters_group.setLayout(filter_layout)
         layout.addWidget(filters_group)
         
+        # Admin mode checkbox
+        filter_layout.addSpacing(20)
+        self.admin_checkbox = QCheckBox("Admin Mode")
+        self.admin_checkbox.setToolTip("Show all courses you have admin access to")
+        self.admin_checkbox.stateChanged.connect(self.toggle_admin_mode)
+        filter_layout.addWidget(self.admin_checkbox)
+
         # Course list
         self.course_list = QListWidget()
         self.course_list.setSelectionMode(
             QListWidget.SelectionMode.MultiSelection
         )
         layout.addWidget(self.course_list)
-        
+                
         # Continue button
         continue_btn = QPushButton("Continue with Selected Sections")
         continue_btn.clicked.connect(self.load_assignments)
@@ -427,6 +431,15 @@ class MainWindow(QMainWindow):
         group.setLayout(layout)
         return group
     
+    def toggle_admin_mode(self, state):
+        """Toggle admin mode and refresh courses"""
+        self.admin_mode = bool(state)
+        if self.admin_mode:
+            self.course_list.clear()
+            self.selection_info.setText("Enter filters and click Search")
+        else:
+            self.search_courses()
+
     def apply_styles(self):
         """Apply university color scheme to entire application"""
         primary = self.config.primary_color
@@ -518,16 +531,30 @@ class MainWindow(QMainWindow):
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         
         try:
+            # In admin mode, require at least one filter
+            if self.admin_mode:
+                course_code = self.course_code_filter.text().strip()
+                year = self.year_filter.currentText().strip()
+                semester = self.semester_filter.currentText().strip()
+                
+                if not course_code and not year and not semester:
+                    QApplication.restoreOverrideCursor()
+                    QMessageBox.information(
+                        self,
+                        "Filter Required",
+                        "Admin mode has access to thousands of courses.\n\n"
+                        "Please enter a course code, year, or semester to narrow results."
+                    )
+                    return
             # Fetch courses from Canvas
-            courses = self.canvas_client.get_courses()
+            courses = self.canvas_client.get_courses(admin_mode=self.admin_mode)
             
             if not courses:
-                QApplication.restoreOverrideCursor()
-                QMessageBox.information(
-                    self,
-                    "No Courses Found",
-                    "No courses found. Make sure you're enrolled as a teacher."
-                )
+                if self.admin_mode:
+                    msg = "No courses found. Your account may not have admin access to any courses."
+                else:
+                    msg = "No courses found. Make sure you're enrolled as a teacher."
+                QMessageBox.information(self, "No Courses Found", msg)
                 return
             
             # Get filter values
