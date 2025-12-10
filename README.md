@@ -9,6 +9,7 @@ Panther Assessment is a powerful assessment reporting tool that helps faculty ge
 - Configure outcomes/assessment items using assignments, rubric sections or quiz question groups,including outcomes that span multiple assignments
 - Save templates for reuse across semesters
 - Generate Excel reports showing student performance on learning outcomes
+- Download the User Guide here (it is also incorporated into the program): [PantherAssessment_User_Guide.docx](PantherAssessment_User_Guide.docx)
 
 ## Installation
 
