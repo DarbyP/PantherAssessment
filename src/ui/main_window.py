@@ -2473,7 +2473,7 @@ class MainWindow(QMainWindow):
         progress.setValue(35)
         QApplication.processEvents()
         
-        all_quiz_data = {}  # {(course_id, quiz_id, student_id): {group_id: [question_data]}}
+        all_quiz_data = {}  # {(course_id, quiz_id, student_id): {group_id: {'points': X, 'count': Y}}}
         
         quiz_assignments = []
         for outcome in outcomes:
@@ -2484,11 +2484,25 @@ class MainWindow(QMainWindow):
         
         for idx, (assignment, quiz_ids_by_course) in enumerate(quiz_assignments):
             course_ids_list = assignment.get('course_ids', [])
+            assignment_id = assignment.get('id')
+            assignment_ids_by_course = assignment.get('assignment_ids_by_course', {})
             
             for course_id in course_ids_list:
                 course_quiz_id = quiz_ids_by_course.get(course_id)
                 if not course_quiz_id:
                     continue
+                
+                # Build question_id -> group_id mapping from quiz questions
+                quiz_questions = self.canvas_client.get_quiz_questions(course_id, course_quiz_id)
+                question_to_group = {}
+                for q in quiz_questions:
+                    qid = q.get('id')
+                    gid = q.get('quiz_group_id')
+                    if qid and gid:
+                        question_to_group[qid] = str(gid)
+                
+                # Get course-specific assignment ID
+                course_assignment_id = assignment_ids_by_course.get(course_id, assignment_id)
                 
                 # Get all quiz submissions for this course
                 quiz_subs = self.canvas_client.get_quiz_submissions(course_id, course_quiz_id)
@@ -2500,23 +2514,43 @@ class MainWindow(QMainWindow):
                     if student_id not in student_courses or course_id not in student_courses[student_id]:
                         continue
                     
-                    sub_id = quiz_sub.get('id')
-                    questions = self.canvas_client.get_quiz_submission_questions(sub_id)
-                    
-                    # Organize by group
-                    key = (course_id, course_quiz_id, student_id)
-                    if key not in all_quiz_data:
-                        all_quiz_data[key] = {}
-                    
-                    for q in questions:
-                        if not isinstance(q, dict):
-                            continue
-                        group_id = q.get('quiz_group_id')
-                        if group_id:
-                            group_id = str(group_id)
-                            if group_id not in all_quiz_data[key]:
-                                all_quiz_data[key][group_id] = []
-                            all_quiz_data[key][group_id].append(q)
+                    # Fetch assignment submission with submission_history to get actual points
+                    try:
+                        response = self.canvas_client.session.get(
+                            f"{self.canvas_client.base_url}/api/v1/courses/{course_id}/assignments/{course_assignment_id}/submissions/{student_id}",
+                            params={'include[]': 'submission_history'},
+                            timeout=30
+                        )
+                        
+                        if response.status_code == 200:
+                            sub_data = response.json()
+                            submission_history = sub_data.get('submission_history', [])
+                            
+                            # Get submission_data from the most recent attempt
+                            if submission_history:
+                                latest = submission_history[-1]
+                                submission_data = latest.get('submission_data', [])
+                                
+                                # Sum points by group
+                                key = (course_id, course_quiz_id, student_id)
+                                if key not in all_quiz_data:
+                                    all_quiz_data[key] = {}
+                                
+                                for item in submission_data:
+                                    if not isinstance(item, dict):
+                                        continue
+                                    question_id = item.get('question_id')
+                                    points = item.get('points', 0) or 0
+                                    
+                                    # Look up group from our mapping
+                                    group_id = question_to_group.get(question_id)
+                                    if group_id:
+                                        if group_id not in all_quiz_data[key]:
+                                            all_quiz_data[key][group_id] = {'points': 0, 'count': 0}
+                                        all_quiz_data[key][group_id]['points'] += points
+                                        all_quiz_data[key][group_id]['count'] += 1
+                    except Exception:
+                        pass        
             
             current = 35 + int((idx / len(quiz_assignments)) * 20) if quiz_assignments else 35
             progress.setValue(current)
@@ -2651,19 +2685,15 @@ class MainWindow(QMainWindow):
                                     # Lookup in cached data instead of API call
                                     key = (course_id, course_quiz_id, student_id)
                                     if key in all_quiz_data and group_id in all_quiz_data[key]:
-                                        questions = all_quiz_data[key][group_id]
+                                        group_data = all_quiz_data[key][group_id]
                                         
-                                        # Use actual number of questions student answered, not pick_count
-                                        actual_question_count = len(questions)
+                                        # Use pre-calculated points
+                                        earned_points = group_data.get('points', 0)
+                                        question_count = group_data.get('count', 0)
                                         question_points = question_points_by_course.get(str(course_id), 0)
-
-                                        correct_count = 0
-                                        for q in questions:
-                                            if q.get('correct') in ['true', True]:
-                                                correct_count += 1
-
-                                        part_score += correct_count * question_points
-                                        part_possible += actual_question_count * question_points  # Use actual count
+                                        
+                                        part_score += earned_points
+                                        part_possible += question_count * question_points
                                         found_submission = True
                                         break
                             
