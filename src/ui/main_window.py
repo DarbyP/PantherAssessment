@@ -21,7 +21,23 @@ from pathlib import Path
 from src.utils.config import get_config
 from src.api.browser_auth import SimpleBrowserAuthDialog, TokenBasedCanvasClient
 import keyring
+import requests
 
+__version__ = "1.3.0"
+
+def check_for_updates():
+    try:
+        response = requests.get(
+            "https://api.github.com/repos/DarbyP/PantherAssessment/releases/latest",
+            timeout=5
+        )
+        if response.status_code == 200:
+            latest = response.json()["tag_name"].lstrip("v")
+            if latest != __version__:
+                return latest, response.json()["html_url"]
+    except:
+        pass
+    return None, None
 
 class MainWindow(QMainWindow):
     """Main application window"""
@@ -54,7 +70,20 @@ class MainWindow(QMainWindow):
         # Auto-load courses after UI is ready
         if self.canvas_client:
             self.search_courses()
-    
+        
+        from PyQt6.QtCore import QTimer
+        QTimer.singleShot(2000, self.check_updates)
+
+    def check_updates(self):
+        new_version, url = check_for_updates()
+        if new_version:
+            msg = QMessageBox(self)
+            msg.setWindowTitle("Update Available")
+            msg.setText(f"Version {new_version} is available.")
+            msg.setInformativeText(f'<a href="{url}">Download here</a>')
+            msg.setTextFormat(Qt.TextFormat.RichText)
+            msg.exec()
+
     def authenticate(self) -> bool:
         """Authenticate with Canvas using API token"""
         # Check for saved Canvas URL
