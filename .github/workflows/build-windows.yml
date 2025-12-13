@@ -29,5 +29,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PantherAssessment-Win
+          name: Panther Assessment-Win
           path: dist/*.exe
