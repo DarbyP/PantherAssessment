@@ -538,7 +538,7 @@ class TokenBasedCanvasClient:
         try:
             response = self.session.get(
                 f"{self.base_url}/api/v1/courses/{course_id}/quizzes/{quiz_id}/submissions",
-                params={'per_page': 100},
+                params={'per_page': 100, 'include[]': 'submission'},
                 timeout=30
             )
             
