@@ -23,7 +23,7 @@ from src.api.browser_auth import SimpleBrowserAuthDialog, TokenBasedCanvasClient
 import keyring
 import requests
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 def check_for_updates():
     try:
