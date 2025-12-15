@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         self.canvas_client = None
         self.admin_mode = False
         
-        self.setWindowTitle("Panther Assessment - Canvas Assessment Data Exporter")
+        self.setWindowTitle(f"Panther Assessment v{__version__}")
         self.setMinimumSize(1000, 600)  # Minimum size that fits on smaller screens
         self.resize(1000, 650)  # Default size, works with 150% DPI scaling
         
@@ -2499,6 +2499,7 @@ class MainWindow(QMainWindow):
                     if student_id not in all_students:
                         all_students[student_id] = {
                             'id': student_id,
+                            'sis_user_id': user.get('sis_user_id', ''),
                             'name': user.get('name', 'Unknown'),
                             'sortable_name': user.get('sortable_name', 'Unknown')
                         }
@@ -2711,7 +2712,7 @@ class MainWindow(QMainWindow):
                 return
             
             row = {
-                'Student ID': student_id,
+                'Student ID': student.get('sis_user_id', ''),
                 'Student Name': student['sortable_name'],
                 'Course ID': student_courses.get(student_id, [None])[0]  # First course they're enrolled in
             }
