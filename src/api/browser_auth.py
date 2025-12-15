@@ -452,7 +452,8 @@ class TokenBasedCanvasClient:
             params = {
                 'type[]': 'StudentEnrollment',
                 'state[]': 'active',
-                'per_page': 100
+                'per_page': 100,
+                'include[]': 'sis_user_id'
             }
             
             response = self.session.get(
