@@ -1,0 +1,178 @@
+name: Build and Release
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+
+  # ─────────────────────────────────────────────
+  #  Update VERSION file and commit back to repo
+  # ─────────────────────────────────────────────
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Write version to VERSION file
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "$VERSION" > VERSION
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "Update VERSION to $VERSION [skip ci]"
+          git push origin HEAD:main
+
+  # ─────────────────────────────────────────────
+  #  macOS (arm64 — Apple Silicon)
+  # ─────────────────────────────────────────────
+  build-macos:
+    runs-on: macos-latest
+    needs: update-version
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build macOS app
+        run: |
+          pyinstaller --onedir --windowed \
+            --name "Panther Assessment" \
+            --icon=assets/panther_icon.icns \
+            --add-data "config.yaml:." \
+            --add-data "assets:assets" \
+            --add-data "VERSION:." \
+            --hidden-import keyring.backends.macOS \
+            --hidden-import requests \
+            main.py
+
+      - name: Import signing certificate
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          echo "$CERTIFICATE_BASE64" | base64 --decode > certificate.p12
+          security create-keychain -p actions build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p actions build.keychain
+          security import certificate.p12 \
+            -k build.keychain \
+            -P "$CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s -k actions build.keychain
+
+      - name: Sign all binaries inside app
+        run: |
+          find "dist/Panther Assessment.app" \
+            -type f \( -name "*.so" -o -name "*.dylib" -o -name "Python" \) \
+            -print0 | xargs -0 -I{} \
+            codesign --force --verify \
+              --sign "Developer ID Application" \
+              --options runtime "{}"
+
+          codesign --deep --force --verify --verbose \
+            --sign "Developer ID Application" \
+            --options runtime \
+            "dist/Panther Assessment.app"
+
+      - name: Create DMG
+        run: |
+          brew install create-dmg
+          create-dmg \
+            --volname "Panther Assessment" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --app-drop-link 425 120 \
+            "dist/Panther-Assessment-macOS.dmg" \
+            "dist/Panther Assessment.app" || true
+
+          if [ ! -f "dist/Panther-Assessment-macOS.dmg" ]; then
+            hdiutil create -volname "Panther Assessment" \
+              -srcfolder "dist/Panther Assessment.app" \
+              -ov -format UDZO \
+              "dist/Panther-Assessment-macOS.dmg"
+          fi
+
+      - name: Notarize DMG
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcrun notarytool submit "dist/Panther-Assessment-macOS.dmg" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_ID_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait
+          xcrun stapler staple "dist/Panther-Assessment-macOS.dmg"
+
+      - name: Upload macOS DMG to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Panther-Assessment-macOS.dmg
+
+  # ─────────────────────────────────────────────
+  #  Windows
+  # ─────────────────────────────────────────────
+  build-windows:
+    runs-on: windows-latest
+    needs: update-version
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build Windows executable
+        run: |
+          pyinstaller --onefile --windowed `
+            --name "Panther Assessment" `
+            --icon=assets/panther_icon.ico `
+            --add-data "config.yaml;." `
+            --add-data "assets;assets" `
+            --add-data "VERSION;." `
+            --hidden-import keyring.backends.Windows `
+            --hidden-import requests `
+            main.py
+
+      - name: Create ZIP
+        run: |
+          Compress-Archive `
+            -Path "dist\Panther Assessment.exe" `
+            -DestinationPath "dist\Panther-Assessment-Windows.zip"
+
+      - name: Upload Windows ZIP to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Panther-Assessment-Windows.zip

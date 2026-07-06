@@ -1,0 +1,17 @@
+canvas:
+  api_version: v1
+  base_url: ''
+  request_timeout: 30
+output:
+  timestamp_files: true
+templates:
+  last_directory: /Users/darby/Library/CloudStorage/GoogleDrive-dproctor@go.fit.edu/My
+    Drive/AssDean/Online/applied psych/assessment/BA panther assessment templates
+  migration_shown: false
+ui:
+  colors:
+    primary: '#770000'
+    secondary: '#CBCCCE'
+user_settings:
+  remember_last_course: true
+  save_preferences: true

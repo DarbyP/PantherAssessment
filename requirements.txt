@@ -1,0 +1,25 @@
+# Panther Assessment - Requirements
+# Python 3.12+
+
+# Canvas API
+requests==2.34.2
+
+# Data Processing
+pandas==3.0.3
+
+# Excel Generation
+openpyxl==3.1.5
+xlsxwriter==3.2.9
+
+# GUI Framework
+PyQt6==6.11.0
+PyQt6-Qt6==6.11.0
+
+# Configuration
+PyYAML==6.0.3
+
+# Secure Credential Storage
+keyring==25.7.0
+
+# Utilities
+python-dateutil==2.9.0.post0
