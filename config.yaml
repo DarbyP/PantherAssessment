@@ -5,8 +5,7 @@ canvas:
 output:
   timestamp_files: true
 templates:
-  last_directory: /Users/darby/Library/CloudStorage/GoogleDrive-dproctor@go.fit.edu/My
-    Drive/AssDean/Online/applied psych/assessment/BA panther assessment templates
+  last_directory: ''
   migration_shown: false
 ui:
   colors:
